@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order | Anni Cafe</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background: #f5f5f5;
+    }
+
+    model-viewer {
+      width: 100%;
+      max-width: 600px;
+      height: 500px;
+      margin: auto;
+      display: none; /* Hidden initially */
+    }
+
+    .ar-button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .ar-button:hover {
+      background: #0056b3;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div class="brand">
+          <span class="brand-logo">Annii</span>
+          <div class="brand-text">
+            <div class="brand-title">Anni Cafe</div>
+            <div class="brand-subtitle">Dine-In Ordering</div>
+          </div>
+        </div>
+        <button class="btn btn-outline cart-toggle" type="button" id="cart-btn">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-count" id="cart-count">0</span>
+        </button>
+      </header>
+
+      <!-- Welcome Screen -->
+      <div id="welcome-screen" class="screen active">
+        <main class="main">
+          <section class="hero-card">
+            <div class="hero-content">
+              <h1 class="hero-title">Welcome</h1>
+              <p class="hero-description">
+                Browse our delicious menu and place your order. Our kitchen is ready to serve you!
+              </p>
+              <button class="btn btn-primary" type="button" id="order-now-btn">
+                Order Now
+              </button>
+            </div>
+          </section>
+
+          <section class="info">
+            <h2 class="info-title">How it works</h2>
+            <ol class="info-steps">
+              <li>Browse the menu from your table.</li>
+              <li>Click on "View AR" to see your food item in 
+                  <br>3d on your table through your mobile.</li>
+              <li>Add items to your order.</li>
+              <li>Review your cart and confirm.</li>
+              <li>Your order will be sent to the kitchen.</li>
+            </ol>
+          </section>
+        </main>
+      </div>
+
+      <!-- Menu Screen -->
+      <div id="menu-screen" class="screen">
+        <div class="menu-header">
+          <button class="btn-back" id="back-btn" type="button">← Back</button>
+          <h2 class="menu-title">Our Menu</h2>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs" id="category-tabs">
+          <button class="category-tab active" data-category="all">All</button>
+          <button class="category-tab" data-category="appetizers">Appetizers</button>
+          <button class="category-tab" data-category="mains">Main Course</button>
+          <button class="category-tab" data-category="desserts">Desserts</button>
+          <button class="category-tab" data-category="beverages">Beverages</button>
+          <button class="category-tab" data-category="anni">Anni</button>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="menu-items" id="menu-items">
+          <!-- Items will be dynamically inserted here -->
+        </div>
+      </div>
+
+      <!-- Cart Screen -->
+      <div id="cart-screen" class="screen">
+        <div class="cart-header">
+          <button class="btn-back" id="cart-back-btn" type="button">← Back</button>
+          <h2 class="cart-title">Your Order</h2>
+        </div>
+
+        <div class="cart-content" id="cart-content">
+          <div class="cart-empty" id="cart-empty">
+            <!-- Empty cart content will be dynamically inserted here -->
+          </div>
+          <div class="cart-items" id="cart-items">
+            <!-- Cart items will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <div class="cart-footer" id="cart-footer">
+          <div class="table-number-section">
+            <label for="table-number" class="table-number-label">
+              <span class="table-icon">🪑</span>
+              <span>Table Number</span>
+            </label>
+            <input
+              type="text"
+              id="table-number"
+              class="table-number-input"
+              placeholder="Enter table number"
+              maxlength="10"
+            />
+            <div class="table-number-error" id="table-number-error"></div>
+          </div>
+          <div class="cart-summary">
+            <div class="cart-summary-row">
+              <span class="summary-label">Items:</span>
+              <span class="summary-value" id="item-count">0</span>
+            </div>
+            <div class="cart-summary-row">
+              <span class="summary-label">Subtotal:</span>
+              <span class="summary-value" id="subtotal-amount">₹0</span>
+            </div>
+            <div class="cart-summary-divider"></div>
+            <div class="cart-summary-row total-row">
+              <span class="total-label">Total Amount:</span>
+              <span class="total-amount" id="total-amount">₹0</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-confirm" id="confirm-order-btn" disabled>
+            <span class="btn-icon">✓</span>
+            <span>Place Order</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Order Confirmation Screen -->
+      <div id="confirmation-screen" class="screen">
+        <div class="confirmation-content">
+          <div class="confirmation-icon">✓</div>
+          <h2 class="confirmation-title">Order Confirmed!</h2>
+          <p class="confirmation-message">
+            Your order has been sent to WhatsApp. We'll prepare it fresh for you!
+          </p>
+          <p class="confirmation-note" id="whatsapp-note">
+            📱 Opening WhatsApp...
+          </p>
+          <div class="order-summary" id="order-summary">
+            <!-- Order summary will be shown here -->
+          </div>
+          <button class="btn btn-primary" id="new-order-btn">Place New Order</button>
+        </div>
+      </div>
+
+
+
+  <script>
+    function openAR() {
+      const model = document.getElementById('arModel');
+      model.style.display = "block";
+      model.activateAR();
+    }
+  </script>
+
+
+
+
+<model-viewer src="../../assets/ShopifyModels/Chair.glb" poster="../../assets/ShopifyModels/Chair.webp" shadow-intensity="1" ar camera-controls touch-action="pan-y" alt="A 3D model carousel">
+  
+  <button slot="ar-button" id="ar-button">
+    View in your space
+  </button>
+
+  <div id="ar-prompt">
+    <img src="../../assets/hand.png">
+  </div>
+
+  <button id="ar-failure">
+    AR is not tracking!
+  </button>
+
+  <div class="slider">
+    <div class="slides">
+      <button class="slide selected" onclick="switchSrc(this, 'Chair')" style="background-image: url('../../assets/ShopifyModels/Chair.webp');">
+
+      </button><button class="slide" onclick="switchSrc(this, 'Mixer')" style="background-image: url('../../assets/ShopifyModels/Mixer.webp');">
+
+      </button><button class="slide" onclick="switchSrc(this, 'GeoPlanter')" style="background-image: url('../../assets/ShopifyModels/GeoPlanter.webp');">
+      
+      </button><button class="slide" onclick="switchSrc(this, 'ToyTrain')" style="background-image: url('../../assets/ShopifyModels/ToyTrain.webp');">
+      
+      </button><button class="slide" onclick="switchSrc(this, 'Canoe')" style="background-image: url('../../assets/ShopifyModels/Canoe.webp');">    
+    </button></div>
+  </div>
+</model-viewer>
+
+<script type="module">
+  const modelViewer = document.querySelector("model-viewer");
+
+  window.switchSrc = (element, name) => {
+    const base = "../../assets/ShopifyModels/" + name;
+    modelViewer.src = base + '.glb';
+    modelViewer.poster = base + '.webp';
+    const slides = document.querySelectorAll(".slide");
+    slides.forEach((element) => {element.classList.remove("selected");});
+    element.classList.add("selected");
+  };
+
+  document.querySelector(".slider").addEventListener('beforexrselect', (ev) => {
+    // Keep slider interactions from affecting the XR scene.
+    ev.preventDefault();
+  });
+</script>
+
+<style>
+  /* This keeps child nodes hidden while the element loads */
+  :not(:defined) > * {
+    display: none;
+  }
+
+  model-viewer {
+    background-color: #eee;
+    overflow-x: hidden;
+  }
+
+  #ar-button {
+    background-image: url(../../assets/ic_view_in_ar_new_googblue_48dp.png);
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: 12px 50%;
+    background-color: #fff;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    bottom: 132px;
+    padding: 0px 16px 0px 40px;
+    font-family: Roboto Regular, Helvetica Neue, sans-serif;
+    font-size: 14px;
+    color:#4285f4;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 18px;
+    border: 1px solid #DADCE0;
+  }
+
+  #ar-button:active {
+    background-color: #E8EAED;
+  }
+
+  #ar-button:focus {
+    outline: none;
+  }
+
+  #ar-button:focus-visible {
+    outline: 1px solid #4285f4;
+  }
+
+  @keyframes circle {
+    from { transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg); }
+    to   { transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg); }
+  }
+
+  @keyframes elongate {
+    from { transform: translateX(100px); }
+    to   { transform: translateX(-100px); }
+  }
+
+  model-viewer > #ar-prompt {
+    position: absolute;
+    left: 50%;
+    bottom: 175px;
+    animation: elongate 2s infinite ease-in-out alternate;
+    display: none;
+  }
+
+  model-viewer[ar-status="session-started"] > #ar-prompt {
+    display: block;
+  }
+
+  model-viewer > #ar-prompt > img {
+    animation: circle 4s linear infinite;
+  }
+
+  model-viewer > #ar-failure {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 175px;
+    display: none;
+  }
+
+  model-viewer[ar-tracking="not-tracking"] > #ar-failure {
+    display: block;
+  }
+
+  .slider {
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    position: absolute;
+    bottom: 16px;
+  }
+
+  .slides {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .slide {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #fff;
+    margin-right: 10px;
+    border-radius: 10px;
+    border: none;
+    display: flex;
+  }
+
+  .slide.selected {
+    border: 2px solid #4285f4;
+  }
+
+  .slide:focus {
+    outline: none;
+  }
+
+  .slide:focus-visible {
+    outline: 1px solid #4285f4;
+  }
+
+</style>
+
+
+
+
+
+
+      <footer class="footer">
+        <span>Table T7 • The Jungle Cook</span>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
