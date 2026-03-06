@@ -339,7 +339,7 @@ function addToCart(itemId) {
   }
 
   updateCartUI();
-  showScreen("cart");
+  // showScreen("cart");
 }
 
 function removeFromCart(itemId) {
